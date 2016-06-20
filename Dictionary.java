@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
+//시험용
+
 //HashMap을 이용해 사전을 저장하는 해쉬테이블을 구현한다.
 //또한 사전을 관리하기 위해서 검색, 삭제, 삽입, 출력, 저장, 로드 등의 메소드를 구현한다.
 public class Dictionary {
