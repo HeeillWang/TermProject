@@ -28,17 +28,9 @@ public class ViewActivity extends Activity {
         Button btn_before = (Button)findViewById(R.id.btn_before); // 이전 버튼
         Button btn_next = (Button)findViewById(R.id.btn_next); // 다음 버튼
         Button btn_return = (Button)findViewById(R.id.btn_return);
-
-        //Intent intent = getIntent();
-        //String[] wordString1 = intent.getStringArrayExtra("wordString");
-        //String[] meaningString1 = intent.getStringArrayExtra("meaningString");
-
-        /*for(int i=0;i<wordString1.length;i++) // 단어와 뜻 받아온 후 dic에 저장
-        {
-            dic.Insert(wordString1[i], meaningString1[i]);
-        }*/
-
-        // 이전 단어를 보는 데 사용
+        final int[] arr;
+        
+        arr = dic.random_index();
 
         btn_before.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -47,17 +39,19 @@ public class ViewActivity extends Activity {
                 // index가 사전의 크기와 맞을 때에는 이전 단어를 보여주지만
                 // 아닐 때에는 그 전에 보여줬던 마지막 단어를 보여줌
 
-                if((index > 1) && (index <= dic.ReturnSize())) {
+                if((index > 0) && (index <= dic.ReturnSize())) {
                     index = index - 1;
-                    String wordTemp = dic.ReturnWord(index);
+                    Log.i("TermProject","Before Index : " + index);
+                    String wordTemp = dic.ReturnWord(arr[index]);
                     text_word.setText(wordTemp);
                     text_meaning.setText(dic.Search(wordTemp));
                 }
                 else
                 {
-                    String wordTemp = dic.ReturnWord(index);
-                    text_word.setText(wordTemp);
-                    text_meaning.setText(dic.Search(wordTemp));
+                    Log.i("TermProject","BeforeEnd");
+              //      String wordTemp = dic.ReturnWord(arr[index]);
+             //       text_word.setText(wordTemp);
+                 //   text_meaning.setText(dic.Search(wordTemp));
                 }
             }
         });
@@ -72,16 +66,20 @@ public class ViewActivity extends Activity {
                 // 아닐 때에는 그 전에 보여줬던 마지막 단어를 보여줌
 
                 if((index >= 0) && (index < dic.ReturnSize())) {
-                    index = index + 1;
-                    String wordTemp = dic.ReturnWord(index);
+
+                    Log.i("TermProject","index : " + index);
+                    Log.i("TermProject",Integer.toString(arr[index]));
+                    String wordTemp = dic.ReturnWord(arr[index]);
                     text_word.setText(wordTemp);
                     text_meaning.setText(dic.Search(wordTemp));
+                    index = index + 1;
                 }
                 else
                 {
-                    String wordTemp = dic.ReturnWord(index);
-                    text_word.setText(wordTemp);
-                    text_meaning.setText(dic.Search(wordTemp));
+                    Log.i("TermProject","NextEnd");
+                  //  String wordTemp = dic.ReturnWord(arr[index]);
+                 //   text_word.setText(wordTemp);
+                   // text_meaning.setText(dic.Search(wordTemp));
                 }
             }
         });

@@ -1,5 +1,7 @@
 package com.example.heeill.termproject;
 
+import android.util.Log;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -8,69 +10,121 @@ import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Random;
 import java.util.Set;
 
-//시험용2
 
 //HashMap을 이용해 사전을 저장하는 해쉬테이블을 구현한다.
 //또한 사전을 관리하기 위해서 검색, 삭제, 삽입, 출력, 저장, 로드 등의 메소드를 구현한다.
 public class Dictionary {
-	static private HashMap<String, String> dic = new HashMap<String, String>(); //사전을 저장할 HashMap
+	static private HashMap<String, Word_info> dic = new HashMap<String, Word_info>(); //사전을 저장할 HashMap
 
-	//word를 사전에서 찾아서 의미를 반환해준다.
-	public String Search(String word){
-		String mean;
+	//word를 사전에서 찾아서 단어 정보를 반환해준다.
+	public Word_info Search_info(String word){
+		Word_info find_word;
 		
 		if(dic.isEmpty()){ //사전이 비어있을 경우
-			//System.out.println("사전이 비어있습니다.");
 			return null;
 		}
 
-		mean =dic.get(word);
+		find_word =dic.get(word);
 		
-		if(mean == null){ //찾으려는 단어가 사전에 없는 경우
-			//System.out.println("해당하는 단어가 사전에 존재하지 않습니다.");
+		if(find_word == null){ //찾으려는 단어가 사전에 없는 경우
 			return null;
 		}
 		else {
-			//System.out.println(word + "의 뜻 : " + mean);
-			
-			return mean;
+			return find_word;
 		}
-			
+	}
+
+	public String Search(String word){
+		Word_info info;
+
+		if(dic.isEmpty()){ //사전이 비어있을 경우
+			return null;
+		}
+
+		info =dic.get(word);
+
+		if(info == null){ //찾으려는 단어가 사전에 없는 경우
+			return null;
+		}
+		else {
+			return info.getMean();
+		}
 	}
 
 	//newWord를 key로 newMeaning을 value로 하여 사전에 추가한다.
 	//newWord가 이미 사전에 존재하면 false를 반환, 성공적으로 삽입하면 true 반환
 	public boolean Insert(String newWord, String newMeaning){
+		Word_info newword = new Word_info(newMeaning);
+
 		if(dic.get(newWord)==null){ //추가하려는 단어가 사전에 없을 때
-			dic.put(newWord, newMeaning);		
+			Log.i("TermProject","insert true");
+			dic.put(newWord, newword);
+			return true;
+		}
+		else{ //추가하려는 단어가 사전에 이미 존재할 때
+			Log.i("TermProject","insert false");
+			return false;
+		}
+	}
+
+	//newWord를 key로 newMeaning을 value로 하여 사전에 추가한다.
+	//newWord가 이미 사전에 존재하면 false를 반환, 성공적으로 삽입하면 true 반환
+	//load시에만 사용되는 insert
+	public boolean Insert(String newWord, String newMeaning, int correct_count){
+		Word_info newword = new Word_info(correct_count,newMeaning);
+
+		if(dic.get(newWord)==null){ //추가하려는 단어가 사전에 없을 때
+			dic.put(newWord, newword);
 			return true;
 		}
 
 		else{ //추가하려는 단어가 사전에 이미 존재할 때
-			//System.out.println("사전에 같은 단어가 이미 존재합니다.");
 			return false;
 		}
+	}
+
+	public int[] random_index()
+	{
+		Random random = new Random();
+		int maximum = dic.size();
+		int[] arr = new int[maximum];
+		int idx;
+		Log.i("TermProject"," " + maximum);
+
+		for(int i = 0 ;i<maximum;i++)
+		{
+			arr[i] = random.nextInt(maximum);
+			for(int j = 0;j<i;j++)
+			{
+				if(arr[j]==arr[i])
+				{
+					i--;
+					break;
+				}
+			}
+		}
+
+		return arr;
 	}
 	
 	//delWord를 사전에서 찾아 삭제한다.
 	//delWord가 사전에 존재하지 않으면 false , 성공적으로 삭제하면 true 반환
 	public boolean Delete(String delWord){
 		if(dic.isEmpty()){ //사전이 비어있을 경우
-			//System.out.println("사전이 비어있습니다.");
 			return false;
 		}
 		
 		if(dic.remove(delWord)==null) //사전에서 삭제하려는 요소를 찾지 못할 경우
 		{
-		    //System.out.println("해당하는 단어가 사전에 존재하지 않습니다.");
 			return false;
 		}
-		else{ 
-			//System.out.println(delWord + "가 사전에서 삭제되었습니다.");
+		else{
 			return true;
 		}
 	}
@@ -92,32 +146,20 @@ public class Dictionary {
 		Iterator<String> it = words.iterator();
 
 		if(dic.isEmpty()){ //사전이 비어있을 경우
-			//System.out.println("사전이 비어있습니다.");
 			return "Dictionary is empty";
 		}
 
-		if((index > dic.size()) || (index < 1)){ // 찾으려는 index번째가 사전 크기에 맞지 않을 경우
+		if((index >= dic.size()) || (index < 0)){ // 찾으려는 index번째가 사전 크기에 맞지 않을 경우
+			Log.i("TemrProject","Oversize");
 			return "Over Size";
 		}
 
-		for(int i=0;i<index;i++) // 입력받은 숫자만큼 다음으로 넘겨서 word에 저장
+		for(int i=0;i<=index;i++) // 입력받은 숫자만큼 다음으로 넘겨서 word에 저장
 		{
 			word = it.next();
 		}
-		return word;
-	}
 
-	//사전의 모든 요소 출력
-	public void Print(){
-		System.out.println("현재 사전에 들어 있는 단어 수 : " + dic.size());
-		
-		Set<String> keys = dic.keySet();
-		Iterator<String> it = keys.iterator();
-		
-		while(it.hasNext()){
-			String key = it.next();
-			//System.out.println(key + " : " + dic.get(key));
-		}
+		return word;
 	}
 	
 	/*
@@ -127,6 +169,7 @@ public class Dictionary {
 	 * dictionary.txt에서 사전의 요소는
 	 * word
 	 * meaning
+	 * correct_count
 	 * 와 같이 계속 개행하며 저장된다.
 	 */
 	public void Save(){
@@ -143,7 +186,8 @@ public class Dictionary {
 				String key = it.next();
 				writer.write(key);
 				writer.newLine();
-				writer.write(dic.get(key));
+				writer.write(dic.get(key).getMean());
+				writer.write(dic.get(key).getCorrect_count());
 				writer.newLine();
 			}
 		    
@@ -162,10 +206,13 @@ public class Dictionary {
 			FileReader fr = new FileReader(src);
 			BufferedReader reader = new BufferedReader(fr);
 			String word,mean;
+			int correct_count;
 			
 			while((word=reader.readLine()) != null){ //파일의 마지막줄까지 읽어온다.
 				mean=reader.readLine();
-				dic.put(word, mean);
+				correct_count = Integer.parseInt(reader.readLine());
+
+				this.Insert(word,mean,correct_count);
 			}
 			
 			if(dic.size()==0)//이전에 저장한 빈 파일만 존재할 경우

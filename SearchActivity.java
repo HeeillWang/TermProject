@@ -16,14 +16,15 @@ public class SearchActivity extends Activity implements Serializable{
     Dictionary dic = new Dictionary();
     String word; //클래스 전체의 멤버변수 말고 각 메소드의 멤버변수로 선언할수는 없을까?
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
         Log.i("TermProject", "Create()");
 
-        final EditText edttxt = (EditText)findViewById(R.id.edttxt);
         final TextView txtview = (TextView)findViewById(R.id.txtview);
+        final EditText edttxt = (EditText)findViewById(R.id.edttxt);
         Button btn_ins = (Button) findViewById(R.id.btn_ins);
         Button btn_search = (Button)findViewById(R.id.btn_search);
         Button btn_del = (Button)findViewById(R.id.btn_del);
@@ -41,6 +42,9 @@ public class SearchActivity extends Activity implements Serializable{
 
                 if(dic.Search(word) == null) { //입력한 단어가 사전에 존재하지 않을 때
                     startActivityForResult(intent,0); //새로운 액티비티를 시작해서 사용자가 의미까지 입력하도록 한다.
+                }
+                else{
+                    txtview.setText("이미 존재하는 단어입니다.");
                 }
             }
         });
@@ -104,11 +108,12 @@ public class SearchActivity extends Activity implements Serializable{
     }
 
     @Override
+    //사전에 존재하지 않는 단어 체크는 이미 되어있음
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
         if(resultCode == RESULT_OK){
             Log.i("TermProject","getResult");
             String mean = data.getStringExtra("의미");
+
             dic.Insert(word,mean);
         }
     }
