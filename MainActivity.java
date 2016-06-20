@@ -18,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
         Button btn_search_act = (Button) findViewById(R.id.btn_search_act);
         Button btn_quiz_act = (Button)findViewById(R.id.btn_quiz_act);
         Button btn_word_act = (Button)findViewById(R.id.btn_word_act);
+        Button btn_set_act = (Button)findViewById(R.id.btn_set_act);
 
         btn_search_act.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
@@ -40,6 +41,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        btn_set_act.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                Intent intent = new Intent(getApplicationContext(),SettingActivity.class);
+                startActivity(intent);
+            }
+        });
 
     }
 }
