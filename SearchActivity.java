@@ -14,7 +14,7 @@ import java.io.Serializable;
 public class SearchActivity extends Activity implements Serializable{
 
     Dictionary dic = new Dictionary();
-    String word; //클래스 전체의 멤버변수 말고 각 메소드의 멤버변수로 선언할수는 없을까?
+    String word; 
 
 
     @Override
@@ -56,7 +56,7 @@ public class SearchActivity extends Activity implements Serializable{
                 Log.i("TermProject","Search : " + word);
 
                 if(mean==null)
-                    txtview.setText("사전에 존재하지 않는 단어입니다. \n추가하고자 한다면 아래 '추가'버튼을 눌러주세요");
+                    txtview.setText("단어장에 존재하지 않는 단어입니다. \n추가하고자 한다면 아래 '추가'버튼을 눌러주세요");
                 else
                     txtview.setText("의미 : " + mean);
             }
@@ -69,9 +69,9 @@ public class SearchActivity extends Activity implements Serializable{
                 Log.i("TermProject","Delete : " + word);
 
                 if(dic.Delete(word) == true)
-                    txtview.setText(word + "가 사전에서 삭제되었습니다.");
+                    txtview.setText(word + "가 단어장에서 삭제되었습니다.");
                 else
-                    txtview.setText(word + "가 사전에 존재하지 않습니다");
+                    txtview.setText(word + "가 단어장에 존재하지 않습니다");
             }
         });
 
