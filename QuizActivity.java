@@ -1,8 +1,12 @@
 package com.example.heeill.termproject;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.*;
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -13,14 +17,14 @@ import android.widget.Toast;
  */
 public class QuizActivity extends Activity {
 
-    int question;   //문제 번호
+    int question;   //문제 인덱스 번호
     int a[] = new int[4];   //보기 번호들
-    int real_answer;    //답 보기 번호
+    int real_answer;    //정답 보기 번호
 
     Dictionary dic=new Dictionary();
-    ArrayList<String> word = new ArrayList<>();
-    ArrayList<Integer> quizlist = new ArrayList<>();
-    final int word_max = dic.ReturnSize();
+    ArrayList<String> word = new ArrayList<>(); //문제로 낼 단어 리스트
+    ArrayList<String> quizlist = new ArrayList<>(); //이미 시행 한 문제 저장
+    int word_max = dic.ReturnSize();    //전체 단어들 숫자
 
     TextView textQuestion;
     TextView textAnswer[] = new TextView[4];
@@ -48,9 +52,9 @@ public class QuizActivity extends Activity {
         answerBtn[3] = (LinearLayout)findViewById(R.id.answer4);
         wrong = (TextView)findViewById(R.id.wrong);
 
-        for(int i = 0;i<word_max;i++)
+        for(int i = 0;i<word_max;i++)   //최초 단어 리스트 저장
         {
-            word.add(dic.ReturnWord(i+1));
+            word.add(dic.ReturnWord(i));
         }
 
         return true;
@@ -61,7 +65,19 @@ public class QuizActivity extends Activity {
      */
     private void correct()
     {
-        Toast.makeText(getApplicationContext(),"Correct!",Toast.LENGTH_SHORT).show();
+        dic.Search_info(word.get(question)).correct();
+        if(dic.Search_info(word.get(question)).getCorrect_count()>=5)
+        {
+            //해당 단어 삭제
+            dic.Delete(word.get(question));
+            quizlist.remove(word.get(question));
+            word.remove(question);
+            word_max--;
+
+            Toast.makeText(getApplicationContext(),"Goal Reached!", Toast.LENGTH_SHORT).show();
+        }else {
+            Toast.makeText(getApplicationContext(), "Correct!", Toast.LENGTH_SHORT).show();
+        }
     }
 
     /*
@@ -69,42 +85,44 @@ public class QuizActivity extends Activity {
      */
     private void wrong()
     {
+        dic.Search_info(word.get(question)).wrong();
         Toast.makeText(getApplicationContext(),"Wrong!",Toast.LENGTH_SHORT).show();
     }
 
     /*
     퀴즈 생성 함수
 
-    정답일 시
+    return : 모든 단어에 대해서 퀴즈를 시행했다면 false 반환
      */
     private boolean quizCreater()
     {
         Random random = new Random();
 
-        if(quizlist.size()==word_max)
+        if(quizlist.size()==word_max)   //만약 모든 단어를 시행완료했다면 false 반환
             return false;
 
         while(true) {
             question = random.nextInt(word_max);    //퀴즈 랜덤 입력
-            if (!quizlist.contains(question))   //퀴즈 중복 확인 후 만약 중복이 아닐시
+            if (!quizlist.contains(word.get(question)))   //퀴즈 중복 확인 후 만약 중복이 아닐시 계속 진행
             {
-                quizlist.add(question);
+                quizlist.add(word.get(question));   //문제로 나올 해당 단어 저장
                 break;
             }
         }
 
-        for(int i = 0;i<4;i++)
+        for(int i = 0;i<4;i++)  //보기들 입력
         {
             while(true) {
                 a[i] = random.nextInt(word_max);
-                if(a[i]!=question)
+                if(a[i]!=question)  //이때 보기는 정답과 중복되면 안됨
                     break;
             }
         }
 
-        real_answer = random.nextInt(4);
-        a[real_answer] = question;
+        real_answer = random.nextInt(4);    //정답이 될 보기 번호 저장
+        a[real_answer] = question;  //정답 보기에 정답 인덱스 번호 저장
 
+        //문제 출력
         textQuestion.setText(word.get(question));
         for(int i = 0;i<4;i++)
         {
@@ -188,7 +206,6 @@ public class QuizActivity extends Activity {
         return true;
     }
 
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz);
@@ -197,6 +214,15 @@ public class QuizActivity extends Activity {
             this.finish();
         else {
             quiz();
+        }
+    }
+
+    private void File_Save()
+    {
+        try {
+            FileOutputStream file = openFileOutput("quiz_data.dat", Context.MODE_PRIVATE);
+        } catch (FileNotFoundException e) {
+            Log.i("TermProject","quiz data load error");
         }
     }
 
