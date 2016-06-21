@@ -32,12 +32,16 @@ public class QuizActivity extends Activity {
     ArrayList<String> word = new ArrayList<>(); //문제로 낼 단어 리스트
     ArrayList<String> quizlist = new ArrayList<>(); //이미 시행 한 문제 저장
     int word_max = dic.ReturnSize();    //전체 단어들 숫자
+    int repeat;
     final String filename = "quiz_data.dat";
 
     TextView textQuestion;
+    TextView num[] = new TextView[4];
     TextView textAnswer[] = new TextView[4];
     TextView wrong;
     LinearLayout answerBtn[] = new LinearLayout[4];
+
+    Setting sett;
 
     /*
     테스트 완료시 작동 함수
@@ -47,6 +51,44 @@ public class QuizActivity extends Activity {
         Toast.makeText(getApplicationContext(),"Test Over",Toast.LENGTH_LONG).show();
         quizlist.clear();
         finish();
+    }
+
+    /*
+    설정사항을 적용하는 함수
+     */
+    private void setting_apply()
+    {
+        switch(sett.getQuiz_font())
+        {
+            case S:
+                textQuestion.setTextSize(16);
+                for(int i = 0;i<4;i++)
+                {
+                    textAnswer[i].setTextSize(10);
+                    num[i].setTextSize(10);
+                }
+                wrong.setTextSize(10);
+                break;
+            case M:
+                textQuestion.setTextSize(24);
+                for(int i = 0;i<4;i++)
+                {
+                    textAnswer[i].setTextSize(15);
+                    num[i].setTextSize(15);
+                }
+                wrong.setTextSize(15);
+                break;
+            case L:
+                textQuestion.setTextSize(32);
+                for(int i = 0;i<4;i++)
+                {
+                    textAnswer[i].setTextSize(20);
+                    num[i].setTextSize(20);
+                }
+                wrong.setTextSize(20);
+                break;
+        }
+        repeat = sett.getQuiz_repeat();
     }
 
     /*
@@ -64,6 +106,10 @@ public class QuizActivity extends Activity {
         textAnswer[1] = (TextView)findViewById(R.id.text_answer2);
         textAnswer[2] = (TextView)findViewById(R.id.text_answer3);
         textAnswer[3] = (TextView)findViewById(R.id.text_answer4);
+        num[0] = (TextView)findViewById(R.id.text_num1);
+        num[1] = (TextView)findViewById(R.id.text_num2);
+        num[2] = (TextView)findViewById(R.id.text_num3);
+        num[3] = (TextView)findViewById(R.id.text_num4);
         answerBtn[0] = (LinearLayout)findViewById(R.id.answer1);
         answerBtn[1] = (LinearLayout)findViewById(R.id.answer2);
         answerBtn[2] = (LinearLayout)findViewById(R.id.answer3);
@@ -75,6 +121,8 @@ public class QuizActivity extends Activity {
             word.add(dic.ReturnWord(i));
         }
 
+        setting_apply();
+
         return true;
     }
 
@@ -84,13 +132,18 @@ public class QuizActivity extends Activity {
     private void correct()
     {
         dic.Search_info(word.get(question)).correct();
-        if(dic.Search_info(word.get(question)).getCorrect_count()>=5)
+        if(dic.Search_info(word.get(question)).getCorrect_count()>=repeat)  //설정된 반복횟수에 도달하게되면
         {
             //해당 단어 삭제
             dic.Delete(word.get(question));
             quizlist.remove(word.get(question));
             word.remove(question);
             word_max--;
+
+            if(word_max<4)
+            {
+                quiz_over();
+            }
 
             Toast.makeText(getApplicationContext(),"Goal Reached!", Toast.LENGTH_SHORT).show();
         }else {
@@ -150,6 +203,11 @@ public class QuizActivity extends Activity {
         return true;
     }
 
+    /*
+    퀴즈 함수
+
+    return : 모든 단어에 대해서 퀴즈를 시행했다면 false 반환
+     */
     private boolean quiz()
     {
         if(false==quizCreater()) {
@@ -268,7 +326,8 @@ public class QuizActivity extends Activity {
             try {
                 while((tem = buffer.readLine())!=null)
                 {
-                    quizlist.add(tem);
+                    if(word.contains(tem))
+                        quizlist.add(tem);
                 }
             } catch (IOException e) {
                 Log.i("TermProject","quiz data loading error");
