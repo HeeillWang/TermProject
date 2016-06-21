@@ -18,9 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-/**
- * Created by User on 2016-06-21.
- */
+
 public class LockScreenActivity extends Activity {
 
     int question;   //문제 인덱스 번호
