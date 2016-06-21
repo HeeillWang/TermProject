@@ -21,14 +21,13 @@ public class SearchActivity extends Activity implements Serializable{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
-        Log.i("TermProject", "Create()");
+        Log.i("TermProject", "Search-Create()");
 
         final TextView txtview = (TextView)findViewById(R.id.txtview);
         final EditText edttxt = (EditText)findViewById(R.id.edttxt);
         Button btn_ins = (Button) findViewById(R.id.btn_ins);
         Button btn_search = (Button)findViewById(R.id.btn_search);
         Button btn_del = (Button)findViewById(R.id.btn_del);
-        Button btn_view = (Button)findViewById(R.id.btn_allview);
         Button btn_return = (Button)findViewById(R.id.btn_return);
 
         btn_ins.setOnClickListener(new View.OnClickListener() {
@@ -75,29 +74,7 @@ public class SearchActivity extends Activity implements Serializable{
                     txtview.setText(word + "가 사전에 존재하지 않습니다");
             }
         });
-/*
-        btn_view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-                // dic에 저장되어 있는 자료를 String 배열에 저장 후 ViewActivity로 넘김
-
-                //String wordString[] = new String[dic.ReturnSize()];
-                String meaningString[] = new String[dic.ReturnSize()];
-
-                for(int i=0;i<dic.ReturnSize();i++)
-                {
-                    wordString[i] = dic.ReturnWord(i+1);
-                    meaningString[i] = dic.Search(wordString[i]);
-                }
-
-                Intent intent = new Intent(getApplicationContext(), ViewActivity.class);
-                intent.putExtra("wordString", wordString);
-                intent.putExtra("meaningString", meaningString);
-                startActivity(intent);
-
-            }
-        });*/
 
         btn_return.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
@@ -111,9 +88,11 @@ public class SearchActivity extends Activity implements Serializable{
     //사전에 존재하지 않는 단어 체크는 이미 되어있음
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(resultCode == RESULT_OK){
+            final TextView txtview = (TextView)findViewById(R.id.txtview);
             Log.i("TermProject","getResult");
             String mean = data.getStringExtra("의미");
 
+            txtview.setText(word + "가 단어장에 추가되었습니다.");
             dic.Insert(word,mean);
         }
     }

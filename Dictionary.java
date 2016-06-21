@@ -1,5 +1,7 @@
 package com.example.heeill.termproject;
 
+import android.content.Context;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import java.io.BufferedInputStream;
@@ -7,9 +9,12 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -19,7 +24,7 @@ import java.util.Set;
 
 //HashMap을 이용해 사전을 저장하는 해쉬테이블을 구현한다.
 //또한 사전을 관리하기 위해서 검색, 삭제, 삽입, 출력, 저장, 로드 등의 메소드를 구현한다.
-public class Dictionary {
+public class Dictionary extends AppCompatActivity {
 	static private HashMap<String, Word_info> dic = new HashMap<String, Word_info>(); //사전을 저장할 HashMap
 
 	//word를 사전에서 찾아서 단어 정보를 반환해준다.
@@ -172,59 +177,72 @@ public class Dictionary {
 	 * correct_count
 	 * 와 같이 계속 개행하며 저장된다.
 	 */
-	public void Save(){
-	
+	public void Save(BufferedWriter writer){
+		Log.i("TermProject","File Save");
 		try{
-			File dst = new File("dictionary.txt");
-			FileWriter fw = new FileWriter(dst);
-			BufferedWriter writer = new BufferedWriter(fw);
+			/*
+			Log.i("TermProject","File Save0");
+			fos = openFileOutput(filename,Context.MODE_PRIVATE);
+			Log.i("TermProject","File Save1");
+			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(fos));
+			Log.i("TermProject","File Save2");
+			*/
+
 			Set<String> keys = dic.keySet();
 			Iterator<String> it = keys.iterator();
-			
 
 		    while(it.hasNext()){
 				String key = it.next();
+				int correct_count;
+
 				writer.write(key);
+				Log.i("TermProject", "File Save1 : "+ key);
 				writer.newLine();
 				writer.write(dic.get(key).getMean());
-				writer.write(dic.get(key).getCorrect_count());
+				Log.i("TermProject", "File Save2 : "+dic.get(key).getMean());
+				writer.newLine();
+
+				correct_count = dic.get(key).getCorrect_count();
+				writer.write(correct_count);
+				Log.i("TermProject", "File Save3 : "+ correct_count);
 				writer.newLine();
 			}
-		    
-		    writer.close();
-		    fw.close();
-		}catch(IOException e){
-			//System.out.println("File error!");
+
+			Log.i("TermProject","File Save Success");
+
+		}catch(Exception e){
+			Log.i("TermProject","File Save Error");
 		}
 		return;
 	}
 	
 	//이전에 저장한 사전 파일을 읽어들여서 dic에 저장한다.
-	public void Load(){
+	public void Load(BufferedReader reader){
+		Log.i("TermProject","File Load");
 		try{
-			File src = new File("./dictionary.txt");
-			FileReader fr = new FileReader(src);
-			BufferedReader reader = new BufferedReader(fr);
 			String word,mean;
 			int correct_count;
-			
+
+
+			Log.i("TermProject","File Load1");
 			while((word=reader.readLine()) != null){ //파일의 마지막줄까지 읽어온다.
+				Log.i("TermProject","File Load2 : " + word);
 				mean=reader.readLine();
-				correct_count = Integer.parseInt(reader.readLine());
+				Log.i("TermProject","File Load3 : " + mean);
+				correct_count = reader.read();
+				reader.readLine();
+				Log.i("TermProject","File Load4 : " + correct_count);
+
 
 				this.Insert(word,mean,correct_count);
 			}
-			
-			if(dic.size()==0)//이전에 저장한 빈 파일만 존재할 경우
-				//System.out.println("이전에 저장한 사전이 비어있습니다. 사전을 시작합니다.");
-			
-			fr.close();
-			reader.close();
-			
+			Log.i("TermProject","File Load Success");
 			return;
-		}catch(IOException e){ //이전에 저장한 파일이 없는 경우
-			//System.out.println("이전에 저장한 사전이 없습니다. 사전을 시작합니다.");
+		}catch(Exception e){ //이전에 저장한 파일이 없는 경우
+			Log.i("TermProject","File Load Error");
 			return;
 		}
 	}
+
+
 }
