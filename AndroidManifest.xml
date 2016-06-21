@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.heeill.termproject">
+    package="com.example.user.finalproject">
 
     <application
         android:allowBackup="true"
@@ -15,24 +15,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".InsertActivity"
-            android:label="Insert Activity" />
-        <activity
-            android:name=".QuizActivity"
-            android:label="Quiz Activity" />
-        <activity
-            android:name=".ViewActivity"
-            android:label="View Activity" />
-        <activity
-            android:name=".SearchActivity"
-            android:label="Search Activity" />
-        <activity
-            android:name=".SettingActivity"
-            android:label="Setting Activity"/>
-        <meta-data
-            android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
+
+        <activity android:name=".SearchActivity"></activity>
+        <activity android:name=".InsertActivity"></activity>
+        <activity android:name=".QuizActivity"></activity>
+        <activity android:name=".SettingActivity"></activity>
+        <activity android:name=".ViewActivity"></activity>
+        <activity android:name=".LockScreenActivity"></activity>
+
+        <service android:name=".ScreenService" />
+        <receiver android:name=".ScreenReceiver"/>
+
     </application>
 
 </manifest>
