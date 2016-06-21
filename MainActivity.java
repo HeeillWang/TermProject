@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     Dictionary dic = new Dictionary();
     String filename = "myfile.txt";
 
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -80,10 +81,15 @@ public class MainActivity extends AppCompatActivity {
         try{
             FileInputStream fin = openFileInput(filename);
             BufferedReader reader = new BufferedReader(new InputStreamReader(fin));
+            FileInputStream fin2 = openFileInput(Setting.filename);
+            BufferedReader reader2 = new BufferedReader(new InputStreamReader(fin2));
             dic.Load(reader); //이전에 저장된 파일을 읽어들임
+            Setting.fileLoad(reader2);
 
             fin.close();
             reader.close();
+            fin2.close();
+            reader2.close();
 
         }catch(Exception e){ //이전에 저장한 파일이 없는 경우
             Log.i("TermProject","Main - File Load Error");
