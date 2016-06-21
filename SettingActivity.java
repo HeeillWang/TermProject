@@ -27,6 +27,10 @@ public class SettingActivity extends AppCompatActivity{
     Button cancel;
     Setting sett = new Setting();
 
+
+    /*
+    데이터를 파일로 저장하는 함수
+     */
     private void saveFile()
     {
         try {
@@ -48,6 +52,9 @@ public class SettingActivity extends AppCompatActivity{
         }
     }
 
+    /*
+    설정한 데이터를 저장하는 함수
+     */
     private void saveData()
     {
         switch (search_rad_font.getCheckedRadioButtonId())
@@ -108,6 +115,9 @@ public class SettingActivity extends AppCompatActivity{
         saveFile();
     }
 
+    /*
+    기존 설정을 setting액티비티에 띄워주는 함수
+     */
     public void setting_apply() {
         search_rad_font = (RadioGroup) findViewById(R.id.Set_radg_search_font);
         wordbook_rad_font = (RadioGroup) findViewById(R.id.Set_radg_wordbook_font);

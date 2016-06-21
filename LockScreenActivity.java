@@ -1,4 +1,4 @@
-package com.example.user.finalproject;
+package com.example.heeill.termproject;
 
 import android.app.Activity;
 import android.content.Intent;

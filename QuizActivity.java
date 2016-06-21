@@ -1,7 +1,14 @@
 package com.example.heeill.termproject;
 
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.*;
 import android.app.Activity;
 import android.content.Context;
@@ -25,11 +32,22 @@ public class QuizActivity extends Activity {
     ArrayList<String> word = new ArrayList<>(); //문제로 낼 단어 리스트
     ArrayList<String> quizlist = new ArrayList<>(); //이미 시행 한 문제 저장
     int word_max = dic.ReturnSize();    //전체 단어들 숫자
+    final String filename = "quiz_data.dat";
 
     TextView textQuestion;
     TextView textAnswer[] = new TextView[4];
     TextView wrong;
     LinearLayout answerBtn[] = new LinearLayout[4];
+
+    /*
+    테스트 완료시 작동 함수
+     */
+    private void quiz_over()
+    {
+        Toast.makeText(getApplicationContext(),"Test Over",Toast.LENGTH_LONG).show();
+        quizlist.clear();
+        finish();
+    }
 
     /*
     최초 초기화 함수
@@ -135,8 +153,7 @@ public class QuizActivity extends Activity {
     private boolean quiz()
     {
         if(false==quizCreater()) {
-            Toast.makeText(getApplicationContext(),"Test Over",Toast.LENGTH_LONG).show();
-            finish();
+            quiz_over();
         }
 
         answerBtn[0].setOnClickListener(new View.OnClickListener() {
@@ -148,8 +165,7 @@ public class QuizActivity extends Activity {
                     wrong();
 
                 if(false==quizCreater()) {
-                    Toast.makeText(getApplicationContext(),"Test Over",Toast.LENGTH_LONG).show();
-                    finish();
+                    quiz_over();
                 }
             }
         });
@@ -161,8 +177,7 @@ public class QuizActivity extends Activity {
                 else
                     wrong();
                 if(false==quizCreater()) {
-                    Toast.makeText(getApplicationContext(),"Test Over",Toast.LENGTH_LONG).show();
-                    finish();
+                    quiz_over();
                 }
             }
         });
@@ -174,8 +189,7 @@ public class QuizActivity extends Activity {
                 else
                     wrong();
                 if(false==quizCreater()) {
-                    Toast.makeText(getApplicationContext(),"Test Over",Toast.LENGTH_LONG).show();
-                    finish();
+                    quiz_over();
                 }
             }
         });
@@ -187,8 +201,7 @@ public class QuizActivity extends Activity {
                 else
                     wrong();
                 if(false==quizCreater()) {
-                    Toast.makeText(getApplicationContext(),"Test Over",Toast.LENGTH_LONG).show();
-                    finish();
+                    quiz_over();
                 }
             }
         });
@@ -197,8 +210,7 @@ public class QuizActivity extends Activity {
             public void onClick(View v) {
                 wrong();
                 if(false==quizCreater()) {
-                    Toast.makeText(getApplicationContext(),"Test Over",Toast.LENGTH_LONG).show();
-                    finish();
+                    quiz_over();
                 }
             }
         });
@@ -210,8 +222,9 @@ public class QuizActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz);
 
+        File_Load();
         if(false==inizializer())
-            this.finish();
+            quiz_over();
         else {
             quiz();
         }
@@ -220,11 +233,63 @@ public class QuizActivity extends Activity {
     private void File_Save()
     {
         try {
-            FileOutputStream file = openFileOutput("quiz_data.dat", Context.MODE_PRIVATE);
+            FileOutputStream file = openFileOutput(filename, Context.MODE_PRIVATE);
+            BufferedWriter buffer = new BufferedWriter(new OutputStreamWriter(file));
+
+            for(int i = 0; i<quizlist.size();i++)
+            {
+                try {
+                    buffer.write(quizlist.get(i));
+                    buffer.newLine();
+                } catch (IOException e) {
+                    Log.i("TermProject","quiz data saving error");
+                }
+            }
+
+            try {
+                buffer.close();
+                file.close();
+            } catch (IOException e) {
+                Log.i("TermProject","quiz data closing error");
+            }
+
         } catch (FileNotFoundException e) {
-            Log.i("TermProject","quiz data load error");
+            Log.i("TermProject","quiz data save error");
         }
     }
 
+    private void File_Load()
+    {
+        try {
+            FileInputStream file = openFileInput(filename);
+            BufferedReader buffer = new BufferedReader(new InputStreamReader(file));
+            String tem;
 
+            try {
+                while((tem = buffer.readLine())!=null)
+                {
+                    quizlist.add(tem);
+                }
+            } catch (IOException e) {
+                Log.i("TermProject","quiz data loading error");
+            }
+
+            try {
+                buffer.close();
+                file.close();
+            } catch (IOException e) {
+                Log.i("TermProject","quiz data closing error");
+            }
+
+        } catch (FileNotFoundException e) {
+            Log.i("TermProject","quiz data load error");
+        }
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        File_Save();
+        super.onDestroy();
+    }
 }
